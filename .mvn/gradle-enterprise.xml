@@ -1,0 +1,8 @@
+<gradleEnterprise>
+    <server>
+        <url>https://e.grdev.net</url>
+    </server>
+    <buildScan>
+        <publish>ALWAYS</publish>
+    </buildScan>
+</gradleEnterprise>
