@@ -7,7 +7,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven {
         url = uri("https://repository.jboss.org/nexus/content/repositories/public")
     }
@@ -24,15 +23,19 @@ dependencies {
         exclude("mysql", "mysql-connector-java")
         exclude("io.quarkus", "quarkus-jdbc-mysql")
         exclude("io.quarkus", "quarkus-jdbc-mysql-deployment")
+
         exclude("com.microsoft.sqlserver", "mssql-jdbc")
         exclude("io.quarkus", "quarkus-jdbc-mssql")
         exclude("io.quarkus", "quarkus-jdbc-mssql-deployment")
+
         exclude("com.oracle.database.jdbc", "ojdbc11")
         exclude("io.quarkus", "quarkus-jdbc-oracle")
         exclude("io.quarkus", "quarkus-jdbc-oracle-deployment")
+
         exclude("org.mariadb.jdbc", "mariadb-java-client")
         exclude("io.quarkus", "quarkus-jdbc-mariadb")
         exclude("io.quarkus", "quarkus-jdbc-mariadb-deployment")
+
         exclude("com.h2database", "h2")
         exclude("io.quarkus", "quarkus-jdbc-h2")
         exclude("io.quarkus", "quarkus-jdbc-h2-deployment")
@@ -40,25 +43,14 @@ dependencies {
     implementation(platform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     constraints {
         implementation("org.keycloak:keycloak-core:18.0.2")
-        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.13.2")
-
+        implementation("org.jboss.resteasy:resteasy-client:4.7.5.Final")
+        implementation("com.thoughtworks.xstream:xstream:1.4.19")
+        implementation("org.postgresql:postgresql:42.3.5")
+        implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
+        implementation("org.apache.commons:commons-compress:1.21")
     }
 }
 
-configurations["implementation"].resolutionStrategy.eachDependency {
-    if (group == "org.keycloak" && name == "keycloak-core") {
-        useVersion("18.0.2")
-    }
-    if (group == "com.fasterxml.jackson.dataformat" && name == "jackson-dataformat-cbor") {
-        useVersion("2.13.2")
-    }
-    if (group == "org.infinispan") {
-        useVersion("13.0.9.Final")
-    }
-    if (group == "org.liquibase" && name == "liquibase-core") {
-        useVersion("4.8.0")
-    }
-}
 group = "com.gradle"
 //version = "18.0.2-GE"
 
