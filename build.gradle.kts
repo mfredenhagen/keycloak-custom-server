@@ -69,18 +69,20 @@ tasks.withType<JavaCompile> {
 
 ext {
     set("quarkus.package.type", "mutable-jar")
+    set("quarkus.package.output-directory", "lib")
 }
 
 quarkus {
-    setFinalName("quarkus-run.jar")
+    setFinalName("keycloak")
 }
 
 tasks {
     register<Copy>("aggregateCustomKeycloakServer") {
+        dependsOn("quarkusBuild")
         from(provider { zipTree(keycloakDist.singleFile) }) {
             exclude("**/lib/**")
         }
-        from(quarkusBuild.map { it.fastJar }) {
+        from("$buildDir/lib") {
             into("keycloak-$keycloakVersion/lib")
         }
 
