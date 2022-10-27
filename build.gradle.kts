@@ -1,5 +1,3 @@
-import io.quarkus.gradle.tasks.QuarkusBuild
-
 plugins {
     java
     id("io.quarkus") version "2.7.5.Final"
@@ -16,8 +14,13 @@ val quarkusPlatformGroupId: String by project
 val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
+val keycloakVersion = "18.0.2"
+
+val keycloakDist by configurations.creating
+
 dependencies {
-    implementation("org.keycloak:keycloak-quarkus-server:18.0.2") {
+    keycloakDist("org.keycloak:keycloak-quarkus-dist:$keycloakVersion@zip")
+    implementation("org.keycloak:keycloak-quarkus-server:$keycloakVersion") {
         exclude("org.wildfly.security", "wildfly-elytron")
 
         exclude("mysql", "mysql-connector-java")
@@ -42,7 +45,7 @@ dependencies {
     }
     implementation(platform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     constraints {
-        implementation("org.keycloak:keycloak-core:18.0.2")
+        implementation("org.keycloak:keycloak-core:$keycloakVersion")
         implementation("org.jboss.resteasy:resteasy-client:4.7.5.Final")
         implementation("com.thoughtworks.xstream:xstream:1.4.19")
         implementation("org.postgresql:postgresql:42.3.5")
@@ -64,6 +67,23 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
 }
 
-tasks.withType<QuarkusBuild> {
-    buildDir = project.buildDir.resolve("re-build")
+ext {
+    set("quarkus.package.type", "mutable-jar")
+}
+
+quarkus {
+    setFinalName("quarkus-run.jar")
+}
+
+tasks {
+    register<Copy>("aggregateCustomKeycloakServer") {
+        from(provider { zipTree(keycloakDist.singleFile) }) {
+            exclude("**/lib/**")
+        }
+        from(quarkusBuild.map { it.fastJar }) {
+            into("keycloak-$keycloakVersion/lib")
+        }
+
+        into("$buildDir")
+    }
 }
